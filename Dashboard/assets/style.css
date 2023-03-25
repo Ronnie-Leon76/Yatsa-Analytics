@@ -1,0 +1,107 @@
+/* assets/style.css */
+
+body {
+    /* fit to page CSS property*/
+    height: 100%;
+    /* center the content */
+    display: flex;
+    flex-direction: column;
+    font-family: "Lato", sans-serif;
+    margin: 0;
+    background-color: #F7F7F7;
+}
+
+.header {
+    background-color: #222222;
+    height: 256px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.header-emoji {
+    font-size: 48px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.header-title {
+    color: #FFFFFF;
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.header-description {
+    color: #CFCFCF;
+    margin: 4px auto;
+    text-align: center;
+    max-width: 384px;
+}
+
+.wrapper {
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 1024px;
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-top: 32px;
+}
+
+.card {
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.18);
+}
+
+.card-title {
+    color: #222222;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #EFEFEF;
+}
+
+.dropdown {
+    width: 300px;
+    margin: 0 auto;
+    
+}
+
+/* media queries */
+@media (max-width: 1024px) {
+    .header {
+        height: 192px;
+    }
+    .header-title {
+        font-size: 36px;
+    }
+    .header-description {
+        font-size: 14px;
+    }
+    .header-emoji {
+        font-size: 36px;
+    }
+    .wrapper {
+        max-width: 768px;
+    }
+}
+@media (max-width: 768px) {
+    .header {
+        height: 128px;
+    }
+    .header-title {
+        font-size: 24px;
+    }
+    .header-description {
+        font-size: 12px;
+    }
+    .header-emoji {
+        font-size: 24px;
+    }
+    .wrapper {
+        max-width: 512px;
+    }
+}
+
