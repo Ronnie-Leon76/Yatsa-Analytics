@@ -5,33 +5,33 @@ import pandas as pd
 
 df = pd.read_csv("./merged_df.csv")
 
-daily_avg_distance = df.groupby(["created_day", "make"])[
+daily_avg_distance = df.groupby("created_day")[
     "distance"].mean().reset_index()
-weekly_avg_distance = df.groupby(["created_week", "make"])[
+weekly_avg_distance = df.groupby("created_week")[
     "distance"].mean().reset_index()
-monthly_avg_distance = df.groupby(["created_month", "make"])[
+monthly_avg_distance = df.groupby("created_month")[
     "distance"].mean().reset_index()
 weekdays_vs_weekends_avg_distance = df.groupby(
     "created_dayofweek")["distance"].mean().reset_index()
-daily_avg_speed = df.groupby(["created_day", "make"])["average_speed"].mean().reset_index()
-weekly_avg_speed = df.groupby(["created_week", "make"])["average_speed"].mean().reset_index()
-monthly_avg_speed = df.groupby(["created_month", "make"])["average_speed"].mean().reset_index()
+daily_avg_speed = df.groupby("created_day")["average_speed"].mean().reset_index()
+weekly_avg_speed = df.groupby("created_week")["average_speed"].mean().reset_index()
+monthly_avg_speed = df.groupby("created_month")["average_speed"].mean().reset_index()
 
 # line charts showing the average distance covered by each vehicle in a day, week, month and also weekdays vs weekends basis
 daily_avg_fig = px.line(daily_avg_distance, x="created_day", y="distance",
-                        color="make", title="Average Distance Covered by each vehicle in a day",  labels={"created_day": "Days", "distance": "Distance (m)"})
+                        title="Average Distance Covered by each vehicle in a day",  labels={"created_day": "Days", "distance": "Distance (m)"})
 weekly_avg_fig = px.line(weekly_avg_distance, x="created_week", y="distance",
-                         color="make", title="Average Distance Covered by each vehicle in a week",  labels={"created_week": "Weeks", "distance": "Distance (m)"})
+                          title="Average Distance Covered by each vehicle in a week",  labels={"created_week": "Weeks in the year", "distance": "Distance (m)"})
 monthly_avg_fig = px.line(monthly_avg_distance, x="created_month", y="distance",
-                          color="make", title="Average Distance Covered by each vehicle in a month",  labels={"created_month": "Months", "distance": "Distance (m)"})
+                          title="Average Distance Covered by each vehicle in a month",  labels={"created_month": "Months in the year", "distance": "Distance (m)"})
 
 weekdays_vs_weekends_bar = px.bar(weekdays_vs_weekends_avg_distance, x="created_dayofweek",
                                   y="distance", title="Average Distance Covered by each vehicle during weekdays vs weekends",  labels={"created_dayofweek": "Weekdays vs Weekends", "distance": "Distance (m)"})
 
 # line chart showing the average speed of the vehicles during the trips made in a day, week, month basis
-daily_avg_speed_fig =  px.line(daily_avg_speed, x="created_day", y="average_speed", color="make", title="Average Speed of the vehicles in a day", labels={"created_day": "Days", "average_speed": "Speed (Km/h)"})
-weekly_avg_speed_fig = px.line(weekly_avg_speed, x="created_week", y="average_speed", color="make", title="Average Speed of the vehicles in a week",  labels={"created_week": "Weeks", "average_speed": "Speed (Km/h)"})
-monthly_avg_speed_fig = px.line(monthly_avg_speed, x="created_month", y="average_speed", color="make", title="Average Speed of the vehicles in a month", labels={"created_month": "Months", "average_speed": "Speed (Km/h)"})
+daily_avg_speed_fig =  px.line(daily_avg_speed, x="created_day", y="average_speed",  title="Average Speed of the vehicles in a day", labels={"created_day": "Days", "average_speed": "Speed (Km/h)"})
+weekly_avg_speed_fig = px.line(weekly_avg_speed, x="created_week", y="average_speed", title="Average Speed of the vehicles in a week",  labels={"created_week": "Weeks", "average_speed": "Speed (Km/h)"})
+monthly_avg_speed_fig = px.line(monthly_avg_speed, x="created_month", y="average_speed", title="Average Speed of the vehicles in a month", labels={"created_month": "Months", "average_speed": "Speed (Km/h)"})
 
 daily_avg_speed_fig.update_layout(
     yaxis=dict(
@@ -39,7 +39,7 @@ daily_avg_speed_fig.update_layout(
         tickmode='linear',
         tick0=0,
         dtick=20,
-        range = [0, 400]
+        range = [0, 200]
     )
 )
 
@@ -49,7 +49,7 @@ weekly_avg_speed_fig.update_layout(
         tickmode='linear',
         tick0=0,
         dtick=20,
-        range = [0, 400]
+        range = [0, 200]
     )
 )
 
@@ -59,7 +59,7 @@ monthly_avg_speed_fig.update_layout(
         tickmode='linear',
         tick0=0,
         dtick=20,
-        range = [0, 400]
+        range = [0, 200]
     )
 )
 
@@ -93,7 +93,7 @@ app.layout = html.Div(
                 ),
                 html.P(
                     children=(
-                        "Yatsa is a software company that helps you track and manage your assets better."
+                        "Yatsa is a software company that helps you track and manage your assets better. "
                         "This dashboard provides insights into the data collected by Yatsa."
                     ),
                     className="header-description",
@@ -103,7 +103,7 @@ app.layout = html.Div(
         ),
         html.Div(
             children=[
-                html.H2(children="Average Distance Covered by the vehicles on a daily, weekly, monthly, weekend and weekends basis", className="card-title"),
+                html.H2(children="Average Distance Covered by the vehicles on a daily, weekly, monthly, weekdays and weekends basis", className="card-title"),
                 dcc.Dropdown(
                     ['Daily', 'Weekly', 'Monthly', 'Weekdays vs Weekends'],
                     'Daily',
@@ -115,9 +115,15 @@ app.layout = html.Div(
         html.Div(
             children=[
                 html.Div(
-                    children = dcc.Graph(
-                        id = "avg_dist_plot",
-                        config = {"displayModeBar": False},
+                    dcc.Loading(
+                        id="loading-1",
+                        type="default",
+                        children=[
+                            dcc.Graph(
+                                id = "avg_dist_plot",
+                                config = {"displayModeBar": False},
+                            ),
+                        ],
                     ),
                     className = "card",
                 ),
@@ -156,9 +162,15 @@ app.layout = html.Div(
         html.Div(
             children=[
                 html.Div(
-                    children = dcc.Graph(
-                        id = "avg_speed_plot",
-                        config = {"displayModeBar": False},
+                    dcc.Loading(
+                        id="loading-2",
+                        type="default",
+                        children=[
+                            dcc.Graph(
+                                id = "avg_speed_plot",
+                                config = {"displayModeBar": False},
+                            ),
+                        ],
                     ),
                     className = "card",
                 ),
