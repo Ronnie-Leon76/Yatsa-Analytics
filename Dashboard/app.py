@@ -3,68 +3,34 @@ import plotly.express as px
 import pandas as pd
 
 
-df = pd.read_csv("./merged_df.csv")
+df = pd.read_csv("../Data/merged_df.csv")
 
-daily_avg_distance = df.groupby(["created_day", "make"])[
+daily_avg_distance = df.groupby("created_day")[
+    "distance"].mean().sort_index()
+weekly_avg_distance = df.groupby("created_week")[
     "distance"].mean().reset_index()
-weekly_avg_distance = df.groupby(["created_week", "make"])[
-    "distance"].mean().reset_index()
-monthly_avg_distance = df.groupby(["created_month", "make"])[
+monthly_avg_distance = df.groupby("created_month")[
     "distance"].mean().reset_index()
 weekdays_vs_weekends_avg_distance = df.groupby(
     "created_dayofweek")["distance"].mean().reset_index()
-daily_avg_speed = df.groupby(["created_day", "make"])["average_speed"].mean().reset_index()
-weekly_avg_speed = df.groupby(["created_week", "make"])["average_speed"].mean().reset_index()
-monthly_avg_speed = df.groupby(["created_month", "make"])["average_speed"].mean().reset_index()
+
 
 # line charts showing the average distance covered by each vehicle in a day, week, month and also weekdays vs weekends basis
 daily_avg_fig = px.line(daily_avg_distance, x="created_day", y="distance",
-                        color="make", title="Average Distance Covered by each vehicle in a day",  labels={"created_day": "Days", "distance": "Distance (m)"})
+                         title="Average Distance Covered by each vehicle in a day",  labels={"created_day": "Days", "distance": "Distance (m)"})
 weekly_avg_fig = px.line(weekly_avg_distance, x="created_week", y="distance",
-                         color="make", title="Average Distance Covered by each vehicle in a week",  labels={"created_week": "Weeks", "distance": "Distance (m)"})
+                          title="Average Distance Covered by each vehicle in a week",  labels={"created_week": "Weeks", "distance": "Distance (m)"})
 monthly_avg_fig = px.line(monthly_avg_distance, x="created_month", y="distance",
-                          color="make", title="Average Distance Covered by each vehicle in a month",  labels={"created_month": "Months", "distance": "Distance (m)"})
+                           title="Average Distance Covered by each vehicle in a month",  labels={"created_month": "Months", "distance": "Distance (m)"})
 
 weekdays_vs_weekends_bar = px.bar(weekdays_vs_weekends_avg_distance, x="created_dayofweek",
                                   y="distance", title="Average Distance Covered by each vehicle during weekdays vs weekends",  labels={"created_dayofweek": "Weekdays vs Weekends", "distance": "Distance (m)"})
 
-# line chart showing the average speed of the vehicles during the trips made in a day, week, month basis
-daily_avg_speed_fig =  px.line(daily_avg_speed, x="created_day", y="average_speed", color="make", title="Average Speed of the vehicles in a day", labels={"created_day": "Days", "average_speed": "Speed (Km/h)"})
-weekly_avg_speed_fig = px.line(weekly_avg_speed, x="created_week", y="average_speed", color="make", title="Average Speed of the vehicles in a week",  labels={"created_week": "Weeks", "average_speed": "Speed (Km/h)"})
-monthly_avg_speed_fig = px.line(monthly_avg_speed, x="created_month", y="average_speed", color="make", title="Average Speed of the vehicles in a month", labels={"created_month": "Months", "average_speed": "Speed (Km/h)"})
 
-daily_avg_speed_fig.update_layout(
-    yaxis=dict(
-        title = "Speed (Km/h)",
-        tickmode='linear',
-        tick0=0,
-        dtick=20,
-        range = [0, 400]
-    )
-)
 
-weekly_avg_speed_fig.update_layout(
-    yaxis=dict(
-        title = "Speed (Km/h)",
-        tickmode='linear',
-        tick0=0,
-        dtick=20,
-        range = [0, 400]
-    )
-)
-
-monthly_avg_speed_fig.update_layout(
-    yaxis=dict(
-        title = "Speed (Km/h)",
-        tickmode='linear',
-        tick0=0,
-        dtick=20,
-        range = [0, 400]
-    )
-)
 
 most_common_destination_bar = px.bar(
-    df["destination_address"].value_counts().head(10), x=df["destination_address"].value_counts().head(10).index, y=df["destination_address"].value_counts().head(10), title="Most common destination for vehicles and how frequent they travel to the destination", width=1000, height=800, labels={"index": "Destination", "destination_address": "Frequency"}
+    df["destination_address"].value_counts().head(10), x=df["destination_address"].value_counts().head(10).index, y=df["destination_address"].value_counts().head(10), title="Most common destination for vehicles and how frequent they travel to the destination", width=1000, height=800, labels={"index": "destination", "destination_address": "Number of trips made"}
 )
 
 
@@ -142,29 +108,6 @@ app.layout = html.Div(
             ],
             className = "wrapper",
         ),
-        html.Div(
-            children=[
-                html.H2(children="Average Speed of the vehicles on a daily, weekly, monthly, weekend and weekends basis", className="card-title"),
-                dcc.Dropdown(
-                    ['Daily', 'Weekly', 'Monthly'],
-                    'Daily',
-                    id="period",
-                    className="dropdown",
-                ),     
-            ]
-        ),
-        html.Div(
-            children=[
-                html.Div(
-                    children = dcc.Graph(
-                        id = "avg_speed_plot",
-                        config = {"displayModeBar": False},
-                    ),
-                    className = "card",
-                ),
-            ],
-            className = "wrapper",
-        ),
     ]
 )
 
@@ -185,20 +128,7 @@ def update_distance_graph(time_frame):
     else:
         return daily_avg_fig
 
-@app.callback(
-    Output("avg_speed_plot", "figure"),
-    Input("period", "value"),
-)
-def update_speed_graph(period):
-    if period == "Daily":
-        return daily_avg_speed_fig
-    elif period == "Weekly":
-        return weekly_avg_speed_fig
-    elif period == "Monthly":
-        return monthly_avg_speed_fig
-    else:
-        return daily_avg_speed_fig
-
 
 if __name__ == '__main__':
+    print(daily_avg_distance)
     app.run_server(debug=True)
