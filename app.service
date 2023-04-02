@@ -1,0 +1,15 @@
+[Unit]
+Description=uWSGI instance to serve app
+After=docker.service
+
+[Service]
+User=root
+WorkingDirectory=/home/Yatsa-Analytics/Dashboard
+Environment="DASH_ENV=production"
+ExecStart=/usr/bin/docker run -p 8050:8050 --name yatsa yatsa
+ExecStop=/usr/bin/docker stop yatsa
+ExecReload=/usr/bin/docker restart yatsa
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
