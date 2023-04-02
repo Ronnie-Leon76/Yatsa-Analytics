@@ -4,6 +4,12 @@ import pandas as pd
 
 
 df = pd.read_csv("./merged_df.csv")
+df['created'] = pd.to_datetime(df['created'], format='%Y-%m-%d %H:%M:%S')
+df['created_day'] = pd.Categorical(df['created'].dt.day_name(), categories= ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], ordered=True)
+df['created_year'] = df['created'].dt.year
+# combine all the values of TUK TUK, tuk tuk and Tuk Tuk into one and let them be one unique value tuk tuk
+df['make'] = df['make'].str.lower()
+
 
 daily_avg_distance = df.groupby("created_day")[
     "distance"].mean().reset_index()
@@ -13,60 +19,39 @@ monthly_avg_distance = df.groupby("created_month")[
     "distance"].mean().reset_index()
 weekdays_vs_weekends_avg_distance = df.groupby(
     "created_dayofweek")["distance"].mean().reset_index()
-daily_avg_speed = df.groupby("created_day")["average_speed"].mean().reset_index()
-weekly_avg_speed = df.groupby("created_week")["average_speed"].mean().reset_index()
-monthly_avg_speed = df.groupby("created_month")["average_speed"].mean().reset_index()
+make_distance = df.groupby("make")["distance"].mean().reset_index()
+
+avg_make_speed = df.groupby("make")["average_speed"].mean().reset_index()
+
+average_speed_trend_over_years = df.groupby('created_year')['average_speed'].mean().reset_index()
+
 
 # line charts showing the average distance covered by each vehicle in a day, week, month and also weekdays vs weekends basis
 daily_avg_fig = px.line(daily_avg_distance, x="created_day", y="distance",
-                        title="Average Distance Covered by each vehicle in a day",  labels={"created_day": "Days", "distance": "Distance (m)"})
+                        title="Average Distance Covered by each vehicle in a day",  labels={"created_day": "Days of the week", "distance": "Distance (m)"}).update_traces(opacity=0.9)
 weekly_avg_fig = px.line(weekly_avg_distance, x="created_week", y="distance",
-                          title="Average Distance Covered by each vehicle in a week",  labels={"created_week": "Weeks in the year", "distance": "Distance (m)"})
+                          title="Average Distance Covered by each vehicle in a week",  labels={"created_week": "Weeks of the year", "distance": "Distance (m)"})
 monthly_avg_fig = px.line(monthly_avg_distance, x="created_month", y="distance",
-                          title="Average Distance Covered by each vehicle in a month",  labels={"created_month": "Months in the year", "distance": "Distance (m)"})
+                          title="Average Distance Covered by each vehicle in a month",  labels={"created_month": "Months of the year", "distance": "Distance (m)"})
+make_distance_bar = px.bar(make_distance, x="make", y="distance", title="Average Distance Covered by each vehicle",  labels={"make": "Vehicle Make", "distance": "Distance (m)"},height=800)
+avg_make_speed_bar = px.bar(avg_make_speed, x="make", y="average_speed", title="Average Speed of each vehicle make",  labels={"make": "Vehicle Make", "average_speed": "Average Speed (km/h)"},height=800)
+
+average_speed_trend_fig = px.line(average_speed_trend_over_years, x="created_year", y="average_speed",
+                                  title="Average Speed Trend between 2022 and 2023",  labels={"created_year": "Years", "average_speed": "Average Speed (km/h)"})
 
 weekdays_vs_weekends_bar = px.bar(weekdays_vs_weekends_avg_distance, x="created_dayofweek",
-                                  y="distance", title="Average Distance Covered by each vehicle during weekdays vs weekends",  labels={"created_dayofweek": "Weekdays vs Weekends", "distance": "Distance (m)"})
+                                  y="distance", title="Average Distance Covered by each vehicle during weekdays vs weekends",  labels={"created_dayofweek": "Weekdays vs Weekends", "distance": "Distance (m)"}).update_traces(width = 0.5)
 
-# line chart showing the average speed of the vehicles during the trips made in a day, week, month basis
-daily_avg_speed_fig =  px.line(daily_avg_speed, x="created_day", y="average_speed",  title="Average Speed of the vehicles in a day", labels={"created_day": "Days", "average_speed": "Speed (Km/h)"})
-weekly_avg_speed_fig = px.line(weekly_avg_speed, x="created_week", y="average_speed", title="Average Speed of the vehicles in a week",  labels={"created_week": "Weeks", "average_speed": "Speed (Km/h)"})
-monthly_avg_speed_fig = px.line(monthly_avg_speed, x="created_month", y="average_speed", title="Average Speed of the vehicles in a month", labels={"created_month": "Months", "average_speed": "Speed (Km/h)"})
-
-daily_avg_speed_fig.update_layout(
-    yaxis=dict(
-        title = "Speed (Km/h)",
-        tickmode='linear',
-        tick0=0,
-        dtick=20,
-        range = [0, 200]
-    )
-)
-
-weekly_avg_speed_fig.update_layout(
-    yaxis=dict(
-        title = "Speed (Km/h)",
-        tickmode='linear',
-        tick0=0,
-        dtick=20,
-        range = [0, 200]
-    )
-)
-
-monthly_avg_speed_fig.update_layout(
-    yaxis=dict(
-        title = "Speed (Km/h)",
-        tickmode='linear',
-        tick0=0,
-        dtick=20,
-        range = [0, 200]
-    )
-)
 
 most_common_destination_bar = px.bar(
-    df["destination_address"].value_counts().head(10), x=df["destination_address"].value_counts().head(10).index, y=df["destination_address"].value_counts().head(10), title="Most common destination for vehicles and how frequent they travel to the destination", width=1000, height=800, labels={"index": "Destination", "destination_address": "Frequency"}
+    df["destination_address"].value_counts().head(10), x=df["destination_address"].value_counts().head(10).index, y=df["destination_address"].value_counts().head(10), title="Most common destination for vehicles and how frequent they travel to the destination", height=800, labels={"index": "Destination", "destination_address": "Frequency"}, color=df['destination_address'].value_counts().head(10).index
 )
 
+vehicles_with_most_trips_bar = px.bar(df['make'].value_counts().head(10), x=df['make'].value_counts().head(10).index, y=df['make'].value_counts().head(10), title="Vehicles with most trips", height=800, labels={"index": "Vehicle Make", "make": "Frequency"}, color=df['make'].value_counts().head(10).index)
+vehicles_with_less_trips_bar = px.bar(df['make'].value_counts().tail(10), x=df['make'].value_counts().tail(10).index, y=df['make'].value_counts().tail(10), title="Vehicles with less trips", height=800, labels={"index": "Vehicle Make", "make": "Frequency"}, color=df['make'].value_counts().tail(10).index)
+vehicles_with_most_trips_bar.update_layout(xaxis_title="Vehicle Make", yaxis_title="Number of Trips")
+vehicles_with_less_trips_bar.update_layout(xaxis_title="Vehicle Make", yaxis_title="Number of Trips")
+most_common_destination_bar.update_layout(xaxis_title="Destination", yaxis_title="Number of Trips made to these destination")
 
 
 external_stylesheets = [
@@ -93,8 +78,8 @@ app.layout = html.Div(
                 ),
                 html.P(
                     children=(
-                        "Yatsa is a software company that helps you track and manage your assets better. "
-                        "This dashboard provides insights into the data collected by Yatsa."
+                        "This dashboard offers valuable insights derived from the data gathered from the Yatsa fleet of vehicles"
+                        
                     ),
                     className="header-description",
                 ),
@@ -103,7 +88,7 @@ app.layout = html.Div(
         ),
         html.Div(
             children=[
-                html.H2(children="Average Distance Covered by the vehicles on a daily, weekly, monthly, weekdays and weekends basis", className="card-title"),
+                html.H2(children="Average distance covered by the vehicles on a daily, weekly, monthly, and weekdays versus weekends", className="card-title"),
                 dcc.Dropdown(
                     ['Daily', 'Weekly', 'Monthly', 'Weekdays vs Weekends'],
                     'Daily',
@@ -127,6 +112,42 @@ app.layout = html.Div(
                     ),
                     className = "card",
                 ),
+                html.Div(
+                    dcc.Markdown(children='''
+                                    -  Average distance covered by the vehicles on a daily basis is 11.22 km
+                                    -  Average distance covered by the vehicles on a weekly basis is 1038.55 km
+                                    -  Average distance covered by the vehicles on a monthly basis is 4500.37 km
+                                    -  More distance is covered in the weekend ( 11.52 km ) compared to weekdays ( 11.13 km )
+                                 '''
+                                ),
+                    className = "mardown", 
+                ),
+            ],
+            className = "wrapper",
+        ),
+        html.Div(
+            children=[
+                html.H2(children="Distance covered by different vehicle make", className="card-title"),
+            ]
+        ),
+        html.Div(
+            children=[
+                html.Div(
+                    children = dcc.Graph(
+                        id = "make_distance",
+                        figure = make_distance_bar,
+                        config = {"displayModeBar": True},
+                    ),
+                    className = "card",
+                ),
+                html.Div(
+                    dcc.Markdown(children='''
+                                    -  Toyota Hiace and Nissan covers the highest distance ( 26.68 km ) and ( 24.22 km ) respectively
+                                    -  Maruti covers the least distance ( 1.26 km )
+                                 '''
+                                ),
+                    className = "mardown", 
+                ),
             ],
             className = "wrapper",
         ),
@@ -144,39 +165,118 @@ app.layout = html.Div(
                         config = {"displayModeBar": True},
                     ),
                     className = "card",
-                )
+                ),
+                html.Div(
+                    dcc.Markdown(children='''
+                                    -  Thika, Kiambu County, Kenya is the most common destination for vehicles and they travel to the destination 466 times
+                                 '''
+                                ),
+                    className = "mardown", 
+                ),
             ],
             className = "wrapper",
         ),
         html.Div(
             children=[
-                html.H2(children="Average Speed of the vehicles on a daily, weekly, monthly, weekend and weekends basis", className="card-title"),
-                dcc.Dropdown(
-                    ['Daily', 'Weekly', 'Monthly'],
-                    'Daily',
-                    id="period",
-                    className="dropdown",
-                ),     
+                html.H2(children="Average speed of different vehicle makes", className="card-title"),
             ]
         ),
         html.Div(
             children=[
                 html.Div(
-                    dcc.Loading(
-                        id="loading-2",
-                        type="default",
-                        children=[
-                            dcc.Graph(
-                                id = "avg_speed_plot",
-                                config = {"displayModeBar": False},
-                            ),
-                        ],
+                    children = dcc.Graph(
+                        id = "avg_make_speed",
+                        figure = avg_make_speed_bar,
+                        config = {"displayModeBar": True},
                     ),
                     className = "card",
+                ),
+                html.Div(
+                    dcc.Markdown(children='''
+                                    -  Lexus nx 300h cvt has the highest average speed ( 224.2 km/h )
+                                    -  Maruti has the least average speed ( 8.6 km/h )
+                                 '''
+                                ),
+                    className = "mardown", 
                 ),
             ],
             className = "wrapper",
         ),
+        html.Div(
+            children=[
+                html.H2(children="The trend in average speed between 2022 and 2023", className="card-title"),
+            ]
+        ),
+        html.Div(
+            children=[
+                html.Div(
+                    children = dcc.Graph(
+                        id = "average_speed_trend",
+                        figure = average_speed_trend_fig,
+                    ),
+                    className = "card",
+                ),
+                html.Div(
+                    dcc.Markdown(children='''
+                                    -  Average speed has been increasing between 2022 and 2023
+                                 '''
+                                ),
+                    className = "mardown", 
+                ),
+            ],
+            className = "wrapper",
+        ),
+        html.Div(
+            children=[
+                html.H2(children="Vehicles with the most trips", className="card-title"),
+            ]
+        ),
+        html.Div(
+            children=[
+                html.Div(
+                    children = dcc.Graph(
+                        id = "most_trips",
+                        figure = vehicles_with_most_trips_bar,
+                        config = {"displayModeBar": True},
+                    ),
+                    className = "card",
+                ),
+                html.Div(
+                    dcc.Markdown(children='''
+                                    -  tuk tuk, piaggio, car, toyota have the highest number of trips made, 450 trips each
+                                 '''
+                                ),
+                    className = "mardown", 
+                ),
+            ],
+            className = "wrapper",
+        ),
+        html.Div(
+            children=[
+                html.H2(children="Vehicles with the less trips", className="card-title"),
+            ]
+        ),
+        html.Div(
+            children=[
+                html.Div(
+                    children = dcc.Graph(
+                        id = "less_trips",
+                        figure = vehicles_with_less_trips_bar,
+                        config = {"displayModeBar": True},
+                    ),
+                    className = "card",
+                ),
+                html.Div(
+                    dcc.Markdown(children='''
+                                    -  Maruti and Honda have the least number of trips made, 1 trip each
+                                 '''
+                                ),
+                    className = "mardown", 
+                ),
+            ],
+            className = "wrapper",
+        ),
+        
     ]
 )
 
@@ -196,20 +296,6 @@ def update_distance_graph(time_frame):
         return weekdays_vs_weekends_bar
     else:
         return daily_avg_fig
-
-@app.callback(
-    Output("avg_speed_plot", "figure"),
-    Input("period", "value"),
-)
-def update_speed_graph(period):
-    if period == "Daily":
-        return daily_avg_speed_fig
-    elif period == "Weekly":
-        return weekly_avg_speed_fig
-    elif period == "Monthly":
-        return monthly_avg_speed_fig
-    else:
-        return daily_avg_speed_fig
 
 
 if __name__ == '__main__':
