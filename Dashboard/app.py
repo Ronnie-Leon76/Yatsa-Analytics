@@ -193,7 +193,7 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     dcc.Markdown(children='''
-                                    -  Lexus nx 300h cvt has the highest average speed ( 224.2 km/h )
+                                    -  Apart from Lexus nx 300h cvt vehicle, all other vehicles have an average speed below 50km/h
                                     -  Maruti has the least average speed ( 8.6 km/h )
                                  '''
                                 ),
@@ -268,7 +268,7 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     dcc.Markdown(children='''
-                                    -  Maruti and Honda have the least number of trips made, 1 trip each
+                                    -  Maruti and Honda have the least number of trips made, 3 trips and 1 trip respectively
                                  '''
                                 ),
                     className = "mardown", 
