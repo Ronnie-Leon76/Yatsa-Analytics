@@ -78,7 +78,7 @@ app.layout = html.Div(
                 ),
                 html.P(
                     children=(
-                        "This dashboard offers valuable insights derived from the data gathered from the Yatsa fleet of vehicles"
+                        "YatsaApp is a car tracking solution that provides real-time GPS tracking and monitoring services for vehicles. This dashboard offers valuable insights derived from the data gathered from the Yatsa fleet of vehicles"
                         
                     ),
                     className="header-description",
@@ -88,7 +88,7 @@ app.layout = html.Div(
         ),
         html.Div(
             children=[
-                html.H2(children="Average distance covered by the vehicles on a daily, weekly, monthly, and weekdays versus weekends", className="card-title"),
+                html.H2(children="Average distance covered by the vehicles on a daily, weekly, monthly, and weekdays versus weekends basis", className="card-title"),
                 dcc.Dropdown(
                     ['Daily', 'Weekly', 'Monthly', 'Weekdays vs Weekends'],
                     'Daily',
@@ -204,7 +204,7 @@ app.layout = html.Div(
         ),
         html.Div(
             children=[
-                html.H2(children="The trend in average speed between 2022 and 2023", className="card-title"),
+                html.H2(children="The trend in average speed of all the assets between 2022 and 2023", className="card-title"),
             ]
         ),
         html.Div(
@@ -218,7 +218,7 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     dcc.Markdown(children='''
-                                    -  Average speed has been increasing between 2022 and 2023
+                                    -  Average speed of all the assets has increased from 18.1 km/h in 2022 to 27.93 km/h in 2023
                                  '''
                                 ),
                     className = "mardown", 
@@ -268,13 +268,31 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     dcc.Markdown(children='''
-                                    -  Maruti and Honda have the least number of trips made, 1 trip each
+                                    -  Maruti and Honda have the least number of trips made, 3 and 1 trips respectively
                                  '''
                                 ),
                     className = "mardown", 
                 ),
             ],
             className = "wrapper",
+        ),
+        html.Div(
+            children=[
+                html.H2(children="Key Takeaways & Recommendations", className="card-title"),
+            ]
+        ),
+        html.Div(
+                dcc.Markdown(children='''
+                            ## Key Takeaways
+                            -  Based on the data regarding the number of trips made and the distance covered per asset make, it can be observed that smaller vehicles tend to have a higher number of trips made compared to larger vehicles.
+                            ## Recommendations
+                            -  To improve their operations, Yatsa should consider placing greater emphasis on Public Service Vehicles. Our assumption is that smaller vehicles such as tuk-tuks and Piaggios are classified as PSVs therefore it may be beneficial for Yatsa to concentrate their efforts on this caetegory of vehicles as they are covering much distance.
+                            -  Yatsa may consider expanding its market to different regions in the country. By exploiting new geographic areas, you can tap into new customer bases and potentially increase your revenue.
+                            ## Suggestions
+                            -  It may be worth considering providing us with fuel consumption data in the future, as this would allow for more comprehensive insights to be drawn from the data collected from your fleet of vehicles.
+                            '''
+                        ),
+            className = "mardown", 
         ),
         
     ]
