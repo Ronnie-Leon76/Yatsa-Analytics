@@ -1,4 +1,4 @@
-# Yatsa-Analytics
+# Yatsa Data Analytics
 
 ## Introduction
 
