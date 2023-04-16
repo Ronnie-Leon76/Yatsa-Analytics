@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Yatsa Data Analytics is a project that aims to perform data analysis on a given dataset to extract insights and make data-driven decisions. This project uses Jupyter Notebook as the main tool for performing the data analysis.
+Yatsa Data Analytics is a project that aims to perform data analysis on the dataset provided by Yatsa to extract insights and make data-driven decisions. This project uses Jupyter Notebook as the main tool for performing the data analysis.
 
 ## Getting Started
 
