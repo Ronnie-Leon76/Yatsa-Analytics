@@ -18,7 +18,7 @@ The Jupyter Notebook file in the Ronnie-EDA-refined branch contains the explorat
 
 ## Dashboard
 
-We have developed a dashboard based on the analysis performed on the Yatsa Data Analytics project. The dashboard provides a user-friendly interface to visualize the insights extracted from the dataset. The link to the dashboard is: [Yatsa Analytics](https://yatsaanalytics.software/)
+We have developed a dashboard based on the analysis performed on the Yatsa Data Analytics project. The dashboard provides a user-friendly interface to visualize the insights extracted from the dataset. Here is a link to the dashboard: [Yatsa Analytics](https://yatsaanalytics.software/)
 
 ## Conclusion
 
