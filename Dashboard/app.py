@@ -4,7 +4,7 @@ import pandas as pd
 
 
 df = pd.read_csv("./merged_df.csv")
-df['created'] = pd.to_datetime(df['created'], format='%Y-%m-%d %H:%M:%S')
+df['created'] = pd.to_datetime(df['created'])
 df['created_day'] = pd.Categorical(df['created'].dt.day_name(), categories= ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], ordered=True)
 df['created_year'] = df['created'].dt.year
 # combine all the values of TUK TUK, tuk tuk and Tuk Tuk into one and let them be one unique value tuk tuk
